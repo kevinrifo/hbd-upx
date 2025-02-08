@@ -1,0 +1,33 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int               @id @default(autoincrement())
+  email            String            @unique
+  first_name       String
+  last_name        String
+  birth_date       String //Store date as "YYYY-MM-DD"
+  location         String
+  timezone         String
+  birthdayMessages BirthdayMessage[]
+}
+
+model BirthdayMessage {
+  id        Int       @id @default(autoincrement())
+  user      User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id   Int
+  sent_at   DateTime?
+  send_date String
+}
