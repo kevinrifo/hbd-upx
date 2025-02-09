@@ -91,13 +91,19 @@ const findMatchingBirthday = async (): Promise<Array<any>> => {
       But, we need to convert their 9am to UTC first
      **/
 
-    const mappedUsers = allUsers.map(user => ({
-        ...user,
-        sendBirtdayMessageAt: moment
-            .tz(`${moment().year()}-${user.birth_date.slice(5)} 12:27:00`, user.timezone)
-            .utc()
-            .format()
-    }));
+      const mappedUsers = allUsers.map(user => {
+
+        // Edge case: get the user's current local time (which may still be in the previous year)
+        const userYear = moment().tz(user.timezone).year();
+
+        return {
+            ...user,
+            sendBirtdayMessageAt: moment
+                .tz(`${userYear}-${user.birth_date.slice(5)} 09:00:00`, user.timezone) // User's 9 AM
+                .utc()
+                .format()
+        };
+    });
 
     // If now is their 9am on their birthday, include it to current queue
     const toBeWished = mappedUsers.filter(x => x.sendBirtdayMessageAt == nowUtc)
