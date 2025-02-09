@@ -26,8 +26,7 @@ npm install
 ### 3. Set Up Environment Variables
 Create a `.env` file and configure your database connection:
 
-``` Please look at .env.example
-```
+_italic Please look at .env.example_
 
 ### 4. Initialize Prisma
 Run the following command to initialize Prisma and apply migrations:
