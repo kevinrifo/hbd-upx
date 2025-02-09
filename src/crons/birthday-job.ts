@@ -4,25 +4,19 @@ import prisma from "../configs/db";
 import { BirthdayMessageWithUser } from "../utils/constants";
 
 async function birthDayMessage() {
-    const birthDayMessages: Array<BirthdayMessageWithUser> = [];
-    const usersToWishHBD: Array<any> = await findMatchingBirthday();
 
-    //Try to resend unsent messages
-    try {
-        const unsentMessages = await prisma.birthdayMessage.findMany({
-            include: {
-                user: true,
-            },
+    //Get users and unsent messages
+    const [usersToWishHBD, unsentMessages] = await Promise.all([
+        findMatchingBirthday(),
+        prisma.birthdayMessage.findMany({
+            include: { user: true },
             where: { sent_at: null }
         })
-        birthDayMessages.push(...unsentMessages)
-    } catch (error) {
-        console.error('Error getting unsent messages:', error instanceof Error ? error.message : "Unknown error");
-    }
+    ]);
 
-    
+    const birthDayMessages: Array<BirthdayMessageWithUser> = [...unsentMessages];
+
     for (const user of usersToWishHBD) {
-
         // Check if message with user and matching birthday exists, if already exists dont make again
         const existingMessage = await prisma.birthdayMessage.findFirst({
             where: { user_id: user.id, send_date: moment(user.sendBirtdayMessageAt).utc().format("YYYY-MM-DD")}
@@ -47,7 +41,6 @@ async function birthDayMessage() {
         }
 
     };
-
 
     for (const birthdayMessage of birthDayMessages) {
         try {
@@ -93,7 +86,7 @@ const findMatchingBirthday = async (): Promise<Array<any>> => {
 
       const mappedUsers = allUsers.map(user => {
 
-        // Edge case: get the user's current local time (which may still be in the previous year)
+        // Edge case: et the user's current local time (which may still be in the previous year)
         const userYear = moment().tz(user.timezone).year();
 
         return {
