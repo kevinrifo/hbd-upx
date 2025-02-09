@@ -1,6 +1,6 @@
-# Prisma API Project
+# Happy Birthday!
 
-This is a simple Node.js API using **Express.js** and **Prisma ORM** to manage users.
+This is a simple Node.js API using **Express.js** and **Prisma ORM** to celebrate user's birthday.
 
 ## Prerequisites
 
